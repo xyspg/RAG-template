@@ -2,7 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { customAlphabet } from "nanoid";
 import { twMerge } from "tailwind-merge";
 import { siteConfig } from "@/siteConfig";
-import jwt from "jsonwebtoken";
+import { SignJWT, jwtVerify } from "jose";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -142,19 +142,20 @@ export function decodeBase64(base64UrlSafeString: string) {
   return JSON.parse(jsonPayload);
 }
 
-export function createJWT(session: Record<any, any>) {
-  const secretKey = process.env.AUTH_SECRET!
+export async function createJWT(session: Record<any, any>) {
+  const secretKey = new TextEncoder().encode(process.env.AUTH_SECRET!)
 
-  return jwt.sign({
-    user: session.user,
-    exp: Math.floor(new Date(session.expires).getTime() / 1000),
-  }, secretKey, {algorithm: 'HS256'})
+  return new SignJWT({ user: session.user })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setExpirationTime(Math.floor(new Date(session.expires).getTime() / 1000))
+    .sign(secretKey)
 }
 
-export function verifyJWT(token: string) {
-  const secretKey = process.env.AUTH_SECRET!
+export async function verifyJWT(token: string) {
+  const secretKey = new TextEncoder().encode(process.env.AUTH_SECRET!)
 
-  return jwt.verify(token, secretKey, {algorithms: ['HS256']});
+  const { payload } = await jwtVerify(token, secretKey, { algorithms: ['HS256'] })
+  return payload
 }
 
 export const stripHtml = (htmlString: string) => {

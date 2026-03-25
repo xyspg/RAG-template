@@ -32,8 +32,10 @@ const OpenAIConfig = {
 // }
 
 
-if (!process.env.ALIBABA_API_KEY) {
-  throw new Error("Missing environment variable ALIBABA_API_KEY");
+function getAlibabaApiKey() {
+  const key = process.env.ALIBABA_API_KEY;
+  if (!key) throw new Error("Missing environment variable ALIBABA_API_KEY");
+  return key;
 }
 
 interface JWT {
@@ -49,7 +51,7 @@ export async function POST(request: Request) {
   if (!auth) return new Response("Unauthorized", { status: 401 })
   let decoded: JWT;
   try {
-    decoded = verifyJWT(auth) as unknown as JWT;
+    decoded = await verifyJWT(auth) as unknown as JWT;
   } catch {
     return new Response("Unauthorized", { status: 401 });
   }
@@ -61,7 +63,7 @@ export async function POST(request: Request) {
 
   const pgvectorStore = await PGVectorStore.initialize(
     new AlibabaTongyiEmbeddings({
-      apiKey: process.env.ALIBABA_API_KEY,
+      apiKey: getAlibabaApiKey(),
       parameters: {
         //@ts-expect-error
         text_type: "query",

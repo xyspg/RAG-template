@@ -200,8 +200,7 @@ async function submitUserMessage(content: string) {
 
     } else return
   }
-  const apiKey =  createJWT(session)
-  console.log(apiKey);
+  const apiKey = await createJWT(session)
 
   openai = new OpenAI({
     apiKey,

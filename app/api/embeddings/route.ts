@@ -8,8 +8,10 @@ import { auth } from "@/auth";
 import { client } from "@/app/db";
 import {revalidatePath} from "next/cache";
 
-if (!process.env.ALIBABA_API_KEY) {
-  throw new Error("Missing environment variable ALIBABA_API_KEY");
+function getAlibabaApiKey() {
+  const key = process.env.ALIBABA_API_KEY;
+  if (!key) throw new Error("Missing environment variable ALIBABA_API_KEY");
+  return key;
 }
 
 /**
@@ -69,7 +71,7 @@ export async function POST(request: Request) {
 
     const pgvectorStore = await PGVectorStore.initialize(
       new AlibabaTongyiEmbeddings({
-        apiKey: process.env.ALIBABA_API_KEY,
+        apiKey: getAlibabaApiKey(),
         parameters: {
           text_type: "document",
         },
@@ -127,7 +129,7 @@ export async function PUT(request: Request) {
      */
     const pgvectorStore = await PGVectorStore.initialize(
       new AlibabaTongyiEmbeddings({
-        apiKey: process.env.ALIBABA_API_KEY,
+        apiKey: getAlibabaApiKey(),
         parameters: {
           text_type: "document",
         },
@@ -192,7 +194,7 @@ export async function DELETE(request: Request) {
     try {
       const pgvectorStore = await PGVectorStore.initialize(
         new AlibabaTongyiEmbeddings({
-          apiKey: process.env.ALIBABA_API_KEY,
+          apiKey: getAlibabaApiKey(),
           parameters: {
             text_type: "document",
           },
