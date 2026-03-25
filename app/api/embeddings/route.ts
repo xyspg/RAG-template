@@ -36,7 +36,6 @@ export async function POST(request: Request) {
   const documentID = crypto.randomUUID();
 
   try {
-    await client.connect();
     const statement =
       "INSERT INTO sources (id, name, content, content_length, created_by) VALUES ($1, $2, $3, $4, $5) RETURNING id";
     const values = [
@@ -112,7 +111,6 @@ export async function PUT(request: Request) {
   let fileName = ''
 
   try {
-    await client.connect();
     const statement =
       "UPDATE sources SET content = $1, content_length = $2 WHERE id = $3 RETURNING name";
     const values = [content, content.length, id];
@@ -183,7 +181,6 @@ export async function DELETE(request: Request) {
     }
 
     try {
-      await client.connect();
       const statement = "DELETE FROM sources WHERE id = $1";
       const values = [id];
       await client.query(statement, values);

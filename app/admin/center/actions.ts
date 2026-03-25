@@ -21,7 +21,6 @@ export const resetPassword = async (id: string) => {
 
   const query = 'UPDATE users SET password = $2, salt = $3 WHERE id = $1'
   try {
-    await client.connect()
     const res = await client.query(query, [id, hashedPassword, salt])
     return {
       type: 'success',

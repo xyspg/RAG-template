@@ -3,7 +3,6 @@ import { Card } from "@/components/dashboard/card";
 import {UserTable} from "@/app/admin/center/user-table";
 
 export default async function Page() {
-  await client.connect();
   const query = "SELECT * FROM users";
   const result = await client.query(query);
   const count = result.rowCount

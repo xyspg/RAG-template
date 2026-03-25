@@ -23,7 +23,6 @@ export async function POST(request: Request) {
     "INSERT INTO folders (id, name, parent_id, created_by) VALUES ($1, $2, $3, $4) RETURNING id";
 
   try {
-    await client.connect();
     const values = [folderId, title, parent_id, userId];
     await client.query(folderStatment, values);
   } catch (e) {
@@ -53,7 +52,6 @@ export async function PUT(request: Request) {
     "UPDATE folders SET name = $1 WHERE id = $2";
 
   try {
-    await client.connect();
     const values = [title, folder_id, userId];
     await client.query(folderStatment, values);
   } catch (e) {
@@ -82,7 +80,6 @@ export async function DELETE(request: Request) {
     "DELETE FROM folders WHERE id = $1";
 
   try {
-    await client.connect();
     const values = [folder_id, userId];
     await client.query(folderStatment, values);
   } catch (e) {

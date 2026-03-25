@@ -13,7 +13,6 @@ export default async function Page({
   params: { slug: string };
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  await client.connect();
   const statement = "SELECT * FROM sources";
   let files;
 

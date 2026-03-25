@@ -29,7 +29,6 @@ export async function PUT(request: Request) {
   }
 
   try {
-    await client.connect();
     await client.query(folderStatment, values);
   } catch (e) {
     console.error(e);

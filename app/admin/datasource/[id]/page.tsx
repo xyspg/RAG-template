@@ -9,7 +9,6 @@ import BackButton from "@/components/back-button";
 const Page = async ({ params }: { params: { id: string } }) => {
   const { id } = params;
   console.log(id);
-  await client.connect();
   let content;
   try {
     const response = await client.query("SELECT * FROM sources WHERE id = $1", [

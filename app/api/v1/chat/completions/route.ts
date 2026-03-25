@@ -17,11 +17,8 @@ import { formatDocumentsAsString } from "langchain/util/document";
 
 import { config } from "@/app/db/embeddings";
 import { PromptTemplate } from "@langchain/core/prompts";
-import jwt from 'jsonwebtoken'
-import {decodeBase64} from "@/lib/utils";
+import {verifyJWT} from "@/lib/utils";
 import {getUser} from "@/app/login/actions";
-import {decodeJwt} from "jose";
-import {initializeAgentExecutorWithOptions} from "langchain/agents";
 
 const OpenAIConfig = {
   baseURL: process.env.OPENAI_BASE_URL,
@@ -50,8 +47,12 @@ interface JWT {
 export async function POST(request: Request) {
   const auth = request.headers.get("Authorization")?.split('Bearer ')[1];
   if (!auth) return new Response("Unauthorized", { status: 401 })
-  const decoded =decodeJwt(auth) as JWT
-  console.log(decoded);
+  let decoded: JWT;
+  try {
+    decoded = verifyJWT(auth) as unknown as JWT;
+  } catch {
+    return new Response("Unauthorized", { status: 401 });
+  }
   const user = await getUser(decoded.user.email)
   if (!user || user?.id !== decoded.user.id) return new Response("Unauthorized", { status: 401 })
   const { messages, stream: streamOption } = await request.json();
@@ -110,8 +111,6 @@ export async function POST(request: Request) {
   });
 
   ragChainWithSource = ragChainWithSource.assign({ answer: ragChainFromDocs });
-
-  await ragChainWithSource.invoke(query);
 
   const headers = {
     "Content-Type": "text/event-stream",
